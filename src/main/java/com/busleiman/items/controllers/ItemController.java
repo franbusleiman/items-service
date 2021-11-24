@@ -1,25 +1,27 @@
 package com.busleiman.items.controllers;
 
 
-import com.busleiman.items.domain.Item;
-import com.busleiman.items.domain.Product;
-import com.busleiman.items.service.ItemService;
+import brave.Response;
+import com.busleiman.items.domain.dtos.ItemDTO;
+import com.busleiman.items.domain.dtos.responses.ItemResponse;
+import com.busleiman.items.domain.entities.Item;
+import com.busleiman.items.domain.dtos.Product;
+import com.busleiman.items.domain.validationsGroups.Action;
+import com.busleiman.items.service.ItemServiceImpl;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -27,7 +29,7 @@ import java.util.List;
 public class ItemController {
 
     @Autowired
-    private ItemService itemService;
+    private ItemServiceImpl itemService;
 
     Logger logger = LoggerFactory.getLogger(ItemController.class);
 
@@ -36,51 +38,61 @@ public class ItemController {
             @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "4"),
             @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "50")})
     @GetMapping(value = "/{id}/quantity/{quantity}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Item> getProductById(@PathVariable("id") Long id,
-                                               @PathVariable("quantity") int quantity){
+    public ResponseEntity<ItemResponse> getProductById(@PathVariable("id") Long id){
 
         logger.info("Looking for an item product");
 
-        return ResponseEntity.ok(itemService.findById(id, quantity));
+        return ResponseEntity.ok(itemService.findById(id));
+    }
+
+    @GetMapping(value = "/price", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ItemResponse>> findItemsWhitHigherPrice(@RequestParam("price") Double price){
+
+        return ResponseEntity.ok().body(itemService.findAllWithHigherPrice(price));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Item>> getItems(){
+    public ResponseEntity<List<ItemResponse>> getItems(){
 
         return ResponseEntity.ok(itemService.findAll());
     }
 
-    public ResponseEntity<Item> getProductFallback(Long id, int quantity){
+    public ResponseEntity<ItemResponse> getProductFallback(Long id, int quantity){
 
        Product product = new Product(0L, "This is a fallback", LocalDate.from(Instant.now()), 0.00);
 
-        return ResponseEntity.status(500).body(new Item(product, 0));
+        return ResponseEntity.status(500).body(ItemResponse.builder()
+                .productId(0L)
+                .price(0.00)
+                .id(0L)
+                .quantity(25)
+                .build());
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteProduct(@PathVariable("id") Long id) throws Exception {
-        itemService.deleteProduct(id);
+    public ResponseEntity<Void> deleteItem(@PathVariable("id") Long id) throws Exception {
+        itemService.deleteItem(id);
         return ResponseEntity.status(204).build();
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) throws Exception {
+    public ResponseEntity<ItemResponse> createItem( @Validated(Action.Update.class)@RequestBody ItemDTO itemDTO) throws Exception {
 
-        Product product1 = itemService.createProduct(product);
+        ItemResponse itemResponse = itemService.createItem(itemDTO);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(product1.getId())
+                .buildAndExpand(itemResponse.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(product1);
+        return ResponseEntity.created(location).body(itemResponse);
     }
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Product> updateProduct(@PathVariable("id") Long id,
-                                                 @RequestBody Product product) throws Exception {
+    public ResponseEntity<ItemResponse> updateItem(@PathVariable("id") Long id,
+                                                   @Validated(Action.Create.class) @RequestBody ItemDTO itemDTO) throws Exception {
 
-        return ResponseEntity.ok(itemService.updateProduct(id, product));
+        return ResponseEntity.ok(itemService.updateItem(id, itemDTO));
     }
 
 

@@ -1,8 +1,7 @@
 package com.busleiman.items.service.config;
 
-import com.busleiman.items.domain.Product;
+import com.busleiman.items.domain.dtos.Product;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +14,7 @@ public interface FeignProductClient {
     List<Product> getProducts();
 
     @RequestMapping(method = RequestMethod.GET, value = "/products/{id}")
-    Product getProductById(@PathVariable("id") Long id);
+    ResponseEntity<Product> getProductById(@PathVariable("id") Long id);
 
     @RequestMapping(method = RequestMethod.POST, value = "/products")
     ResponseEntity<Product>createProduct(@RequestBody Product product);

@@ -1,4 +1,4 @@
-package com.busleiman.items.domain;
+package com.busleiman.items.domain.dtos;
 
 import lombok.*;
 

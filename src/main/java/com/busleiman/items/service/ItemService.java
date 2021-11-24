@@ -1,16 +1,18 @@
 package com.busleiman.items.service;
 
-import com.busleiman.items.domain.Item;
-import com.busleiman.items.domain.Product;
+import com.busleiman.items.domain.dtos.ItemDTO;
+import com.busleiman.items.domain.dtos.responses.ItemResponse;
+import com.busleiman.items.domain.entities.Item;
 
 import java.util.List;
 
 public interface ItemService {
 
-    List<Item> findAll();
-    Item findById(Long id, int quantity);
-    Product createProduct(Product product) throws Exception;
-    Product updateProduct(Long id, Product product) throws Exception;
-    void deleteProduct(Long id) throws Exception;
+    List<ItemResponse> findAll();
+    List<ItemResponse> findAllWithHigherPrice(Double price);
+    ItemResponse findById(Long id);
+    ItemResponse createItem(ItemDTO itemDTO) throws Exception;
+    ItemResponse updateItem(Long id, ItemDTO itemDTO) throws Exception;
+    void deleteItem(Long id) throws Exception;
 
 }
