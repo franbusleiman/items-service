@@ -71,11 +71,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse updateItem(Long id, ItemDTO itemDTO) throws Exception {
+    public void updateItem(Long id, ItemDTO itemDTO) throws Exception {
 
         Item item = itemRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
-
 
 
         if(itemDTO.getProductId() != null && itemDTO.getProductId() != item.getProduct().getId() ) {
@@ -92,7 +91,7 @@ public class ItemServiceImpl implements ItemService {
         item.setQuantity(itemDTO.getQuantity());
         }
 
-        return itemMapper.itemToItemResponse(itemRepository.save(item));
+        itemRepository.save(item);
     }
 
 

@@ -3,6 +3,7 @@ package com.busleiman.items.domain.entities;
 import com.busleiman.items.domain.dtos.Product;
 import lombok.*;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 
 
@@ -23,7 +24,6 @@ public class Item {
 
     @Column(name = "product")
     @Embedded
-    @NonNull
     private Product product;
 
     @Column(name = "quantity")
@@ -31,6 +31,18 @@ public class Item {
     private Integer quantity;
 
     @Column(name = "price")
-    private Double price = product.getPrice() * quantity;
+    private Double price;
 
+
+    public void setProduct (Product product){
+        this.product = product;
+        this.price = product.getPrice() * this.quantity;
+    }
+
+    public void setQuantity(int quantity){
+        this.quantity = quantity;
+        if(this.product != null){
+            this.price = this.product.getPrice() * quantity;
+        }
+    }
 }

@@ -89,10 +89,12 @@ public class ItemController {
         return ResponseEntity.created(location).body(itemResponse);
     }
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ItemResponse> updateItem(@PathVariable("id") Long id,
+    public ResponseEntity<Void> updateItem(@PathVariable("id") Long id,
                                                    @Validated(Action.Create.class) @RequestBody ItemDTO itemDTO) throws Exception {
 
-        return ResponseEntity.ok(itemService.updateItem(id, itemDTO));
+        itemService.updateItem(id, itemDTO);
+
+        return ResponseEntity.status(204).build();
     }
 
 

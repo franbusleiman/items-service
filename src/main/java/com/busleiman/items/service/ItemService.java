@@ -12,7 +12,7 @@ public interface ItemService {
     List<ItemResponse> findAllWithHigherPrice(Double price);
     ItemResponse findById(Long id);
     ItemResponse createItem(ItemDTO itemDTO) throws Exception;
-    ItemResponse updateItem(Long id, ItemDTO itemDTO) throws Exception;
+    void updateItem(Long id, ItemDTO itemDTO) throws Exception;
     void deleteItem(Long id) throws Exception;
 
 }
