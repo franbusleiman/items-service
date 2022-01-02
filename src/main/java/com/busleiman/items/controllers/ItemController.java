@@ -45,6 +45,12 @@ public class ItemController {
         return ResponseEntity.ok(itemService.findById(id));
     }
 
+    @GetMapping(value = "/sorted", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ItemResponse>> findAllItemsSortedByPrice(){
+
+        return ResponseEntity.ok().body(itemService.findAllSortedByPrice());
+    }
+
     @GetMapping(value = "/price", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ItemResponse>> findItemsWhitHigherPrice(@RequestParam("price") Double price){
 
