@@ -1,6 +1,7 @@
 package com.busleiman.items.service;
 
 
+import com.busleiman.items.domain.comparators.ItemPriceComparator;
 import com.busleiman.items.domain.dtos.ItemDTO;
 import com.busleiman.items.domain.dtos.Product;
 import com.busleiman.items.domain.dtos.responses.ItemResponse;
@@ -32,6 +33,15 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemResponse> findAll() {
 
         return itemRepository.findAll().stream()
+                .map(item -> itemMapper.itemToItemResponse(item))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ItemResponse> findAllSortedByPrice() {
+
+        return itemRepository.findAll().stream()
+                .sorted(new ItemPriceComparator())
                 .map(item -> itemMapper.itemToItemResponse(item))
                 .collect(Collectors.toList());
     }

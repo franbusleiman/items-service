@@ -65,7 +65,23 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void findAllSortedByPrice(){
+        Item item1 = getItem(QUANTITY, ID);
+        Item item2 = getItem(QUANTITY2, ID2);
+        Item item3 = getItem(QUANTITY3, ID3);
+
+        when(itemRepository.findAll()).thenReturn(Arrays.asList(item1, item2, item3));
+
+        List<ItemResponse> itemResponses = itemService.findAllSortedByPrice();
+
+        assertEquals(ID, itemResponses.get(0).getId());
+        assertEquals(ID3, itemResponses.get(1).getId());
+        assertEquals(ID2, itemResponses.get(2).getId());
+    }
+
+    @Test
     void findAllWithHigherPrice() {
+
         Item item1 = getItem(QUANTITY, ID);
         Item item2 = getItem(QUANTITY2, ID2);
         Item item3 = getItem(QUANTITY3, ID3);

@@ -9,6 +9,7 @@ import java.util.List;
 public interface ItemService {
 
     List<ItemResponse> findAll();
+    List<ItemResponse> findAllSortedByPrice();
     List<ItemResponse> findAllWithHigherPrice(Double price);
     ItemResponse findById(Long id);
     ItemResponse createItem(ItemDTO itemDTO) throws Exception;
