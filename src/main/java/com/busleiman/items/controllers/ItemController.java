@@ -35,7 +35,7 @@ public class ItemController {
 
     @HystrixCommand(fallbackMethod = "getProductFallback", commandProperties = {
             @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "3000"),
-            @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "4"),
+            @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "5"),
             @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "50")})
     @GetMapping(value = "/{id}/quantity/{quantity}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemResponse> getProductById(@PathVariable("id") Long id){
